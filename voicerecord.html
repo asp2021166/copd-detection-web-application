@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sequential Cough Audio Recording - COPD Detection AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    primary: "#359EFF",
+                    secondary: "#60a5fa",
+                    "background-light": "#f5f7f8",
+                    "background-dark": "#0f1923"
+                },
+                fontFamily: { display: "Inter" },
+                borderRadius: {
+                    DEFAULT: "0.25rem",
+                    lg: "0.5rem",
+                    xl: "0.75rem",
+                    full: "9999px"
+                }
+            }
+        }
+    };
+</script>
+<style type="text/tailwindcss">
+    .step-active { color: #2563eb; }
+    .step-pending { color: #94a3b8; }
+    .recording-pulse {
+        @apply absolute inset-0 bg-primary/20 rounded-full scale-150;
+    }
+    .waveform-bar {
+        @apply w-1 bg-primary/40 rounded-full;
+    }
+    .waveform-bar-active {
+        @apply bg-primary;
+    }
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+
+<header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+<div class="flex items-center gap-2">
+    <div class="bg-primary p-1.5 rounded-lg flex items-center justify-center">
+        <span class="material-symbols-outlined text-white text-xl">pulmonology</span>
+    </div>
+    <span class="text-xl font-bold tracking-tight text-slate-800 dark:text-white">COPD Detection AI</span>
+</div>
+<div class="flex items-center gap-4">
+    <button class="flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+        <span class="material-symbols-outlined text-lg">help</span> Support
+    </button>
+    <div class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center">
+        <span class="material-symbols-outlined text-slate-500">person</span>
+    </div>
+</div>
+</header>
+
+<div class="flex flex-1">
+<aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 hidden lg:block">
+<nav class="p-4 space-y-2">
+    <a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+        <span class="material-symbols-outlined">dashboard</span> Dashboard
+    </a>
+    <a class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-primary/10 text-primary font-semibold" href="#">
+        <span class="material-symbols-outlined">mic</span> Audio Collection
+    </a>
+    <a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+        <span class="material-symbols-outlined">group</span> Patient Records
+    </a>
+    <a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+        <span class="material-symbols-outlined">settings</span> System Settings
+    </a>
+</nav>
+</aside>
+
+<main class="flex-1 p-6 md:p-12 flex flex-col items-center">
+<div class="w-full max-w-4xl">
+
+<div class="mb-10 flex items-center justify-between relative px-2 max-w-2xl mx-auto">
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 dark:bg-slate-800 -z-10 -translate-y-1/2"></div>
+
+<!-- Sample steps with IDs -->
+<div class="flex flex-col items-center gap-2">
+    <div id="sample1" class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 ring-4 ring-white dark:ring-slate-900">
+        <span class="font-bold">1</span>
+    </div>
+    <span class="text-sm font-semibold text-primary">Sample 1</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+    <div id="sample2" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center ring-4 ring-white dark:ring-slate-900">
+        <span class="font-bold">2</span>
+    </div>
+    <span class="text-sm font-medium text-slate-500">Sample 2</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+    <div id="sample3" class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center ring-4 ring-white dark:ring-slate-900">
+        <span class="font-bold">3</span>
+    </div>
+    <span class="text-sm font-medium text-slate-500">Sample 3</span>
+</div>
+</div>
+
+<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl rounded-2xl overflow-hidden">
+<div class="p-8 md:p-12">
+<div class="text-center mb-10">
+<h1 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Sequential Cough Audio Recording</h1>
+<p class="text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
+    Please record 3 distinct cough samples sequentially for analysis. Ensure the patient is sitting upright and the room is quiet.
+</p>
+</div>
+
+<div class="flex flex-col items-center py-12 px-8 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 transition-all">
+<div id="recordingStatus" class="flex items-center gap-2 mb-8 text-xs font-bold uppercase tracking-widest text-primary">
+    <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Recording Sample 1
+</div>
+<button id="recordBtn" class="relative group mb-8">
+    <div class="recording-pulse"></div>
+    <div class="relative w-36 h-36 bg-primary rounded-full flex items-center justify-center text-white shadow-2xl transition-transform active:scale-95 hover:bg-blue-600">
+        <span class="material-symbols-outlined text-6xl">mic</span>
+    </div>
+</button>
+<span class="text-lg font-bold text-slate-700 dark:text-slate-300">Start/Stop Recording</span>
+<p class="text-sm text-slate-500 mt-2 text-center max-w-xs">Press the button and ask the patient to cough once firmly.</p>
+</div>
+
+<div class="mt-12">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-6 flex items-center gap-2">
+    <span class="material-symbols-outlined text-lg">library_music</span> Recorded Samples
+</h3>
+<div id="recordingsList" class="space-y-4">
+<!-- Recorded audio files will appear here -->
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+</main>
+</div>
+
+<footer class="p-6 text-center border-t border-slate-200 dark:border-slate-800">
+<p class="text-[11px] text-slate-400 dark:text-slate-600">© 2024 Collaborative COPD Detection. Clinical use only. HIPAA Compliant.</p>
+<div class="mt-2 flex justify-center gap-4 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+<a class="hover:text-primary" href="#">Support</a>
+<a class="hover:text-primary" href="#">Privacy</a>
+<a class="hover:text-primary" href="#">Terms</a>
+</div>
+</footer>
+
+<script>
+// Recording logic with stepper highlight
+let mediaRecorder;
+let audioChunks = [];
+let currentSample = 1;
+const maxSamples = 3;
+
+const recordBtn = document.getElementById("recordBtn");
+const recordingsList = document.getElementById("recordingsList");
+const statusText = document.getElementById("recordingStatus");
+
+const sampleSteps = [
+    document.getElementById("sample1"),
+    document.getElementById("sample2"),
+    document.getElementById("sample3")
+];
+
+let isRecording = false;
+
+// Request microphone
+navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    mediaRecorder = new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = e => {
+        audioChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+        audioChunks = [];
+        saveRecording(audioBlob);
+    };
+});
+
+// Record button toggle
+recordBtn.addEventListener("click", () => {
+    if (!isRecording) {
+        if (currentSample > maxSamples) return;
+        mediaRecorder.start();
+        isRecording = true;
+        statusText.innerHTML = `<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Recording Sample ${currentSample}`;
+    } else {
+        mediaRecorder.stop();
+        isRecording = false;
+    }
+});
+
+// Save recording and update stepper
+function saveRecording(blob) {
+    const audioURL = URL.createObjectURL(blob);
+
+    // Add recording to list
+    const item = document.createElement("div");
+    item.className =
+        "flex items-center gap-4 p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm";
+
+    item.innerHTML = `
+        <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+            <span class="material-symbols-outlined">play_arrow</span>
+        </div>
+        <div class="flex-1">
+            <div class="text-sm font-bold">Sample ${currentSample}</div>
+            <audio controls class="w-full mt-2">
+                <source src="${audioURL}" type="audio/webm">
+            </audio>
+        </div>
+    `;
+    recordingsList.appendChild(item);
+
+    // Update stepper
+    if (currentSample <= sampleSteps.length) {
+        // Complete current step
+        sampleSteps[currentSample - 1].classList.remove("bg-primary", "text-white");
+        sampleSteps[currentSample - 1].classList.add("bg-slate-200", "text-slate-500");
+
+        // Activate next step
+        if (currentSample < sampleSteps.length) {
+            sampleSteps[currentSample].classList.remove("bg-slate-200", "text-slate-500");
+            sampleSteps[currentSample].classList.add("bg-primary", "text-white");
+        }
+    }
+
+    currentSample++;
+
+    if (currentSample <= maxSamples) {
+        statusText.innerHTML = `<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Ready for Sample ${currentSample}`;
+    } else {
+        statusText.innerHTML = `All samples recorded`;
+        recordBtn.disabled = true;
+    }
+}
+</script>
+
+</body>
+</html>
