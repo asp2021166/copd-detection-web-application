@@ -270,21 +270,23 @@ uploadBtn.addEventListener("click", async () => {
     uploadBtn.disabled = true;
     uploadBtn.innerText = "Uploading...";
 
-    try {
-        for (let i = 0; i < recordedBlobs.length; i++) {
-            const formData = new FormData();
-            formData.append("audio", recordedBlobs[i], `cough_sample_${i+1}.webm`);
+    
+try {
+    for (let i = 0; i < recordedBlobs.length; i++) {
+        const formData = new FormData();
+        formData.append("audio", recordedBlobs[i], `cough_sample_${i+1}.webm`);
 
-            const response = await fetch("http://127.0.0.1:5000/upload", {
-                method: "POST",
-                body: formData
-            });
+       
+        const response = await fetch("upload.php", {
+            method: "POST",
+            body: formData
+        });
 
-            if (!response.ok) throw new Error("Upload failed");
-        }
+        if (!response.ok) throw new Error("Upload failed");
+    }
 
-        alert("All 3 samples uploaded successfully!");
-        uploadBtn.innerText = "Upload Completed";
+    alert("All 3 samples uploaded successfully!");
+    uploadBtn.innerText = "Upload Completed";
 
     } catch (error) {
         console.error(error);
@@ -298,4 +300,3 @@ uploadBtn.addEventListener("click", async () => {
 
 </body>
 </html>
-
